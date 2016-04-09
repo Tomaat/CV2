@@ -1,0 +1,37 @@
+%function ICP(A1,A2)
+R = eye(3);
+t = zeros(3,1);
+thresh = 0.0012;
+
+[D,W] = size(A1);
+
+% phase 1
+idxes = zeros(1,W);
+for i=1:W
+    [m,idx] = min( sum( (A2-repmat(A1(:,i),1,W)).^2 ) );
+    idxes(i) = idx;
+end
+
+% phase 2
+A1c = mean(A1,2);
+A2c = mean(A2,2);
+A1m = A1 - repmat(A1c,1,W);
+A2m = A2 - repmat(A2c,1,W);
+
+A2m = A2m(:,idxes);
+
+% phase 3
+A = zeros(3,3);
+for i=1:W
+    A = A + A2m(:,i)*A1m(:,i)';
+end
+
+[U,S,V] = svd(A);
+
+% phase 4
+R = U*V;
+t = A1c - R*A2c;
+
+% phase 5
+A2 = R*A2 + repmat(t,1,W);
+mean( A1 - A2(:,idxes) ,2);
