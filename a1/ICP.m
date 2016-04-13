@@ -1,25 +1,46 @@
-function [Rout,tout] = ICP(A1,A2,thresh)
-    if nargin < 3
+function [Rout,tout] = ICP(source,target,method,thresh)
+    if nargin < 4
         thresh = 0.0012;
+        if nargin < 3
+            method = 'all';
+        end
     end
     
     Rout = eye(3);
     tout = zeros(3,1);
     
+    switch method
+        case 'all'
+            A1 = source(1:3,:);
+            A2 = target(1:3,:);
+            [~,W] = size(A1);
+            [~,W2] = size(A2);
+            x = 1:W;
+        case 'sample'
+            A1 = source(1:3,1:13:end);
+            A2 = target(1:3,1:13:end);
+            [~,W] = size(A1);
+            [~,W2] = size(A2);
+            x = 1:W;
+        otherwise
+            fprintf('error');
+            return
+    end
+    
     err = 10;
-    [~,W] = size(A1);
-    [~,W2] = size(A2);
     iter = 0;
     A2r = A2;
-    
+
     while err > thresh
         iter = iter + 1;
         % phase 1
         idxes = zeros(1,W);
-        for i=1:W
+        tic;
+        for i=x
             [~,idx] = min( sum( (A2-repmat(A1(:,i),1,W2)).^2 ) );
             idxes(i) = idx;
         end
+        fprintf('%f   -',err); toc;
 
         % phase 2
         A1c = mean(A1,2);
@@ -45,11 +66,11 @@ function [Rout,tout] = ICP(A1,A2,thresh)
         Rout = R' * Rout;
         tout = tout + t;
 
-        A2 = Rout*A2r + repmat(tout,1,W); % always with original for numeric stability
+        A2 = Rout*A2r + repmat(tout,1,W2); % always with original for numeric stability
         err = mean( sum((A1 - A2(:,idxes) ).^2) );
         
         %pcshow(A1,10,A2);
         %pause(0.001);
     end
-    disp(iter)
+    fprintf('err=%f,  i=%d\n',err,iter);
 end
