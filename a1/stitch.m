@@ -2,7 +2,7 @@ function pc_out = stitch(nth,mx,neir,method,param,thresh,MAXITER)
     
     source = get(0);
     pc_tot = [];
-    for i=1:nth:mx
+    for i=nth:nth:mx
         target = get(i);
         tic;
         [R,t] = ICP(source,target,method,param,thresh,MAXITER);
