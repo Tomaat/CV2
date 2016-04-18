@@ -1,7 +1,9 @@
 function pc_out = stitch(nth,mx,neir,method,param,thresh,MAXITER)
     
     source = get(0);
-    pc_tot = [];
+    pc_tot = cell(length(nth:nth:mx));
+    %pc_tot = [];
+    p = 1;
     for i=nth:nth:mx
         target = get(i);
         tic;
@@ -13,8 +15,9 @@ function pc_out = stitch(nth,mx,neir,method,param,thresh,MAXITER)
         %pcshow2(12,pc_tot,source,transform(target,R,t));
         %pause;
         source = transform(target,R,t);
-        pc_tot = [pc_tot source];
-        
+        %pc_tot = [pc_tot source];
+        pc_tot{p} = source;
+        p = 1 + p;
     end
     
     pc_out = pc_reduce(pc_tot,neir);
