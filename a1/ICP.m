@@ -41,19 +41,19 @@ function [Rout,tout] = ICP(source,target,method,param,thresh,MAXITER)
     
     err = 10;
     iter = 0;
-
+    
     while err > thresh && MAXITER > iter
         [A1,W] = getA1();
         [A2,W2] = getA2(Rout,tout);
         iter = iter + 1;
         % phase 1
         idxes = zeros(1,W);
-        tic;
+        %tic;
         for i=1:W
             [~,idx] = min( sum( (A2-repmat(A1(:,i),1,W2)).^2 ) );
             idxes(i) = idx;
         end
-        fprintf('(%f)   ',err); toc;
+        %fprintf('(%f)   ',err); toc;
 
         % phase 2
         A1c = mean(A1,2);
@@ -73,7 +73,7 @@ function [Rout,tout] = ICP(source,target,method,param,thresh,MAXITER)
         
         % phase 4
         R = U*V';
-        t = A1c - R*A2c;
+        t = A1c - R'*A2c;
 
         % phase 5
         Rout = R' * Rout;
@@ -82,9 +82,11 @@ function [Rout,tout] = ICP(source,target,method,param,thresh,MAXITER)
         A2t = R'*A2 + repmat(t,1,W2); % always with original for numeric stability
         err = mean( sum((A1 - A2t(:,idxes) ).^2) );
         
-        pcshowpair(A1,A2,37);
-        plot3([A1(1,:);A2(1,idxes)],[A1(2,:);A2(2,idxes)],[A1(3,:);A2(3,idxes)]);
-        pause;
+        %pcshowpair(A1,A2,37);
+        %hold on
+        %plot3([A1(1,1:37:end);A2(1,idxes(1:37:end))],[A1(3,1:37:end);A2(3,idxes(1:37:end))],-[A1(2,1:37:end);A2(2,idxes(1:37:end))]);
+        %hold off
+        %pause;
         %hold on
         %pcshowpair(A1,A2,37);
         %scatter3(A1c(1),A1c(3),A1c(2),5,'m','fill');

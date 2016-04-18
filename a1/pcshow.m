@@ -11,7 +11,7 @@ function pcshow(A,f)
     end
     S = ones(size(C)).*1e-99;
     
-    scatter3(A(1,1:f:end),A(2,1:f:end),A(3,1:f:end))%,S,C)
+    scatter3(A(1,1:f:end),A(3,1:f:end),-A(2,1:f:end))%,S,C)
     %axis([-.5 .5 .2 1.2 -.5 .5])
 end
 

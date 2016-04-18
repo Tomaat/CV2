@@ -1,0 +1,22 @@
+function pc_out = stitch(nth,mx,neir,method,param,thresh,MAXITER)
+    
+    source = get(0);
+    pc_tot = [];
+    for i=nth:nth:mx
+        target = get(i);
+        [R,t] = ICP(source,target,method,param,thresh,MAXITER);
+        source = transform(target,R,t);
+        pc_tot = [pc_tot source];
+        
+    end
+    
+    pc_out = pc_reduce(pc_tot,neir);
+end
+
+function x = get(n)
+    x = trim_pc(readPcd(sprintf('./data/%010d.pcd',n)));
+end
+
+function pc_out = pc_reduce(pc_tot,neir)
+    pc_out = pc_tot;
+end
