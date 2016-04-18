@@ -1,26 +1,40 @@
-function pc_out = stitch(nth,mx,neir,method,param,thresh,MAXITER)
+function pc_out = stitch(type,nth,mx,method,param,thresh,MAXITER)
     
     source = get(0);
     pc_tot = cell(length(nth:nth:mx));
     %pc_tot = [];
     p = 1;
-    for i=nth:nth:mx
-        target = get(i);
-        tic;
-        [R,t] = ICP(source,target,method,param,thresh,MAXITER);
-        toc;
-        %subplot(2,1,1);
-        %pcshowpair(source,target);
-        %subplot(2,1,2);
-        %pcshow2(12,pc_tot,source,transform(target,R,t));
-        %pause;
-        source = transform(target,R,t);
-        %pc_tot = [pc_tot source];
-        pc_tot{p} = source;
-        p = 1 + p;
+    switch type
+        case 'iter'
+            for i=nth:nth:mx
+                target = get(i);
+                tic;
+                [R,t] = ICP(source,target,method,param,thresh,MAXITER);
+                toc;
+                source = [source transform(target,R,t)];
+                pc_tot{p} = transform(target,R,t);
+                p = 1 + p;
+            end
+        otherwise
+            for i=nth:nth:mx
+                target = get(i);
+                tic;
+                [R,t] = ICP(source,target,method,param,thresh,MAXITER);
+                toc;
+                %subplot(2,1,1);
+                %pcshowpair(source,target);
+                %subplot(2,1,2);
+                %pcshow2(12,pc_tot,source,transform(target,R,t));
+                %pause;
+                %source = transform(target,R,t);
+                %pc_tot = [pc_tot source];
+                %pc_tot{p} = source;
+                pc_tot{p} = transform(target,R,t);
+                p = 1 + p;
+            end
     end
     
-    pc_out = pc_reduce(pc_tot,neir);
+    pc_out = pc_tot;%pc_reduce(pc_tot,neir);
 end
 
 function x = get(n)
