@@ -10,7 +10,12 @@ function [pc_out,ttoc] = stitch(type,nth,mx,method,param,thresh,MAXITER)
             for i=nth:nth:mx
                 target = get(i);
                 tic;
+                %s_datasample = datasample(source, size(target,2));
+                
+                idx = randperm(size(source, 2));
                 [R,t] = ICP(source,target,method,param,thresh,MAXITER);
+                
+                %[R,t] = ICP(source(:,idx(1:min(size(source, 2), size(target, 2) * 3))),target,method,param,thresh,MAXITER);
                 toc;
                 source = [source transform(target,R,t)];
                 pc_tot{p} = transform(target,R,t);
