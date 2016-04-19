@@ -1,9 +1,10 @@
-function pc_out = stitch(type,nth,mx,method,param,thresh,MAXITER)
+function [pc_out,ttoc] = stitch(type,nth,mx,method,param,thresh,MAXITER)
     
     source = get(0);
-    pc_tot = cell(length(nth:nth:mx));
+    pc_tot = cell(1,length(nth:nth:mx));
     %pc_tot = [];
     p = 1;
+    ttoc = 0;
     switch type
         case 'iter'
             for i=nth:nth:mx
@@ -20,6 +21,7 @@ function pc_out = stitch(type,nth,mx,method,param,thresh,MAXITER)
                 target = get(i);
                 tic;
                 [R,t] = ICP(source,target,method,param,thresh,MAXITER);
+                ttoc = ttoc + toc;
                 toc;
                 %subplot(2,1,1);
                 %pcshowpair(source,target);

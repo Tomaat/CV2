@@ -1,0 +1,61 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.13}
+
+\title{Iterative Closest Point \\ {\large Computer Vision 2 - Assignment 1}}
+\author{Ysbrand Galama \\ 10262067 \and David van Erkelens \\ 10264019}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+\section{Results}
+\begin{figure}
+\centering
+\includegraphics[width=.49\textwidth,height=.49\textwidth]{graphs/sam_i.png}
+\includegraphics[width=.49\textwidth,height=.49\textwidth]{graphs/sam_o.png}
+\caption{The point clouds of the sample data in 3D space (left) and the transformed pair with an error of $0.000947$ after $30$ iterations of the ICP algorithm (right).}
+\label{fig:sam0}
+\end{figure}
+
+\begin{figure}
+\centering
+\input{graphs/graph1.tex}
+\caption{Accuracy and amount of iterations (with a maximum of 15) after ICP on the sample data, using: all points, uniform sampling with step-size $2$,$17$,$47$ and $91$, random sampling with $p=0.8$,$p=0.5$,$p=0.1$ and $p=0.01$, and random sampling with $p=0.8$,$p=0.5$,$p=0.1$ and $p=0.01$ after each iteration.}
+\label{fig:sam1}
+\end{figure}
+
+\begin{figure}
+\centering
+\input{graphs/graph3.tex}
+\caption{Accuracy and amount of iterations (with a maximum of 15) after ICP on the sample data with Gaussian noise of $\mu=0.01$, using: all points, uniform sampling with step-size $2$,$17$,$47$ and $91$, random sampling with $p=0.8$,$p=0.5$,$p=0.1$ and $p=0.01$, and random sampling with $p=0.8$,$p=0.5$,$p=0.1$ and $p=0.01$ after each iteration.}
+\label{fig:sam2}
+\end{figure}
+
+\begin{figure}
+\centering
+\input{graphs/graph2.tex}
+\caption{Accuracy and amount of iterations (with a maximum of 15) after ICP on the sample data with Gaussian noise of $\mu=0.1$, using: all points, uniform sampling with step-size $2$,$17$,$47$ and $91$, random sampling with $p=0.8$,$p=0.5$,$p=0.1$ and $p=0.01$, and random sampling with $p=0.8$,$p=0.5$,$p=0.1$ and $p=0.01$ after each iteration.}
+\label{fig:sam3}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tabular}{cc}
+\includegraphics[width=.49\textwidth,height=.49\textwidth]{graphs/tot1.png} &
+\includegraphics[width=.49\textwidth,height=.49\textwidth]{graphs/tot2.png} \\ (a) & (b) \\
+\includegraphics[width=.49\textwidth,height=.49\textwidth]{graphs/tot4.png} &
+\includegraphics[width=.49\textwidth,height=.49\textwidth]{graphs/tot10.png} \\ (c) & (d)
+\end{tabular}
+\caption{The point cloud of the model after ICP moddeling every frame (a), every second frame (b), every fourth frame (c) and every tenth frame (d) with the frame before.}
+\label{fig:}
+\end{figure}
+
+\section{Discussion}
+
+\end{document}

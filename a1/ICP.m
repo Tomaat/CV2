@@ -1,4 +1,4 @@
-function [Rout,tout] = ICP(source,target,method,param,thresh,MAXITER)
+function [Rout,tout,err,iter] = ICP(source,target,method,param,thresh,MAXITER)
     if nargin < 6
         MAXITER = 20;
         if nargin < 5
@@ -18,6 +18,9 @@ function [Rout,tout] = ICP(source,target,method,param,thresh,MAXITER)
     end
     Rout = eye(3);
     tout = zeros(3,1);
+    
+    %target = gpuArray(target);
+    %source = gpuArray(source);
     
     switch method
         case 'all'
@@ -96,10 +99,13 @@ function [Rout,tout] = ICP(source,target,method,param,thresh,MAXITER)
         %pause(0.001);
     end
     fprintf('err=%f,  i=%d\n',err,iter);
+    Rout = gather(Rout);
+    tout = gather(tout);
 end
 
 function [X,W] = get(X)
     W = size(X,2);
+    %X = gpuArray(X);
 end
 
 function x = frand(N,p)

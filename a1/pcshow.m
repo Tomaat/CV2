@@ -1,6 +1,6 @@
 function pcshow(A,f)
     if nargin < 2
-        f = 13;
+        f = 131;
     end
     
     
@@ -9,9 +9,9 @@ function pcshow(A,f)
     else
         C = zeros(size(A(1,1:f:end)));
     end
-    S = ones(size(C)).*1e-99;
+    S = ones(size(C)).*10;
     
-    scatter3(A(1,1:f:end),A(3,1:f:end),-A(2,1:f:end))%,S,C)
+    scatter3(A(1,1:f:end),A(3,1:f:end),-A(2,1:f:end),S)%,C)
     %axis([-.5 .5 .2 1.2 -.5 .5])
 end
 
