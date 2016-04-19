@@ -1,3 +1,17 @@
+%Author: Ysbrand Galama, David van Erkelens
+
+% Performs ICP algorithm between two 3xN point clouds
+% arguments:
+% - source: 3xN 3D source point cloud
+% - target: 3xM 3D target point cloud
+% - method: method for subsampling, one of (default all)
+%    - 'all': use every point
+%    - 'sample': use every <param>th point
+%    - 'rand1': sample at the beginning random with a chance p=<param>
+%    - 'randi': sample every iteration random with a chance p=<param>
+% - param: the parameter for the method (default 13 for uniform and 0.5 for random)
+% - thresh: the threshold of the MSE where the program will finish (default 0.0012)
+% - MAXITER: the maximum amount of iterations which overrules the error (default 20)
 function [Rout,tout,err,iter] = ICP(source,target,method,param,thresh,MAXITER)
     if nargin < 6
         MAXITER = 20;
@@ -19,9 +33,7 @@ function [Rout,tout,err,iter] = ICP(source,target,method,param,thresh,MAXITER)
     Rout = eye(3);
     tout = zeros(3,1);
     
-    %target = gpuArray(target);
-    %source = gpuArray(source);
-    
+    % switch to build different get functions for the sampling
     switch method
         case 'all'
             getA1 = @() get(source(1:3,:));
@@ -84,19 +96,6 @@ function [Rout,tout,err,iter] = ICP(source,target,method,param,thresh,MAXITER)
 
         A2t = R'*A2 + repmat(t,1,W2); % always with original for numeric stability
         err = mean( sum((A1 - A2t(:,idxes) ).^2) );
-        
-        %pcshowpair(A1,A2,37);
-        %hold on
-        %plot3([A1(1,1:37:end);A2(1,idxes(1:37:end))],[A1(3,1:37:end);A2(3,idxes(1:37:end))],-[A1(2,1:37:end);A2(2,idxes(1:37:end))]);
-        %hold off
-        %pause;
-        %hold on
-        %pcshowpair(A1,A2,37);
-        %scatter3(A1c(1),A1c(3),A1c(2),5,'m','fill');
-        %scatter3(A2c(1),A2c(3),A2c(2),5,'r','fill');
-        %hold off
-        %pause;
-        %pause(0.001);
     end
     fprintf('err=%f,  i=%d\n',err,iter);
     Rout = gather(Rout);
@@ -105,7 +104,6 @@ end
 
 function [X,W] = get(X)
     W = size(X,2);
-    %X = gpuArray(X);
 end
 
 function x = frand(N,p)
