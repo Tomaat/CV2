@@ -1,7 +1,7 @@
 %Author: Ysbrand Galama, David van Erkelens
 
 % Performs ICP algorithm between two 3xN point clouds
-% arguments:
+% @arguments:
 % - source: 3xN 3D source point cloud
 % - target: 3xM 3D target point cloud
 % - method: method for subsampling, one of (default all)
@@ -12,6 +12,11 @@
 % - param: the parameter for the method (default 13 for uniform and 0.5 for random)
 % - thresh: the threshold of the MSE where the program will finish (default 0.0012)
 % - MAXITER: the maximum amount of iterations which overrules the error (default 20)
+% @return
+% - Rout: the rotationmatrix to transform <target> on <source>
+% - tout: the translation vector tot tranform <target> on <source>
+% - err: the MSE of the final fit
+% - iter: amount of iterations the program ran
 function [Rout,tout,err,iter] = ICP(source,target,method,param,thresh,MAXITER)
     if nargin < 6
         MAXITER = 20;
