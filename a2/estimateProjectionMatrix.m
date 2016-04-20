@@ -9,8 +9,8 @@
 function projMatrix = estimateProjectionMatrix(xy, uv)
     o = ones(1,size(xy,2));
     % normalise
-    xy = normalise(xy,o);
-    uv = normalise(uv,o);
+    [xy,T1] = normalise(xy,o);
+    [uv,T2] = normalise(uv,o);
     % set the points
     x = xy(1, :);
     y = xy(2, :);
@@ -26,9 +26,10 @@ function projMatrix = estimateProjectionMatrix(xy, uv)
     [U,D,V] = svd(projMatrix);
     D(end,end) = 0;
     projMatrix = U*D*V';
+    projMatrix = T2'*projMatrix*T1;
 end
 
-function xy = normalise(xy,o)
+function [xy,T] = normalise(xy,o)
     m = mean(xy,2);
     d = mean(sqrt(sum((xy - repmat(m,1,size(xy,2)) ).^2, 1)));
     sq2d = sqrt(2)/d;

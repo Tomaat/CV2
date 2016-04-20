@@ -24,7 +24,7 @@ function [T, bestIN] = RANSAC(Data,eps,k)
         pa = [other(1:2,:);o];
         pb = [other(3:4,:);o];
         Fpa = (F*pa).^2;
-        Fpb = (F'*pb).^2;
+        Fpb = (F'*pb);
         dis = diag( pb'*F*pa )'.^2 ./ ( Fpa(1,:)./Fpa(3,:) + Fpa(2,:)./Fpa(3,:) + Fpb(1,:)./Fpb(3,:) + Fpb(2,:)./Fpb(3,:) );
         
         truePos = other(:,dis < eps);
