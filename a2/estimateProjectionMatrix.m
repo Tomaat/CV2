@@ -5,17 +5,20 @@
 %   and my improvements assisting the same course (2014)
 
 % calculate a transformation matrix from the given from and to points
-% so uv=projMatrix*xy
+% so 0=uv'*projMatrix*xy
 function projMatrix = estimateProjectionMatrix(xy, uv)
+    o = ones(1,size(xy,2));
+    % normalise
+    xy = normalise(xy,o);
+    uv = normalise(uv,o);
     % set the points
-    x = xy (:, 1);
-    y = xy (:, 2);
-    u = uv (:, 1);
-    v = uv (:, 2);
-    o = ones ( size (x));
-    % make the matrix and calculate xAu = 0
-    A = [x.*u x.*v x y.*u y.*v y u v o];
+    x = xy(1, :);
+    y = xy(2, :);
+    u = uv(1, :);
+    v = uv(2, :);
     
+    % make the matrix and calculate xAu = 0
+    A = [x.*u; x.*v; x; y.*u; y.*v; y; u; v; o;]';
     [~, ~, V] = svd(A);
     m = V(:, end );
     % reshape m into the 3x3 projection matrix M
@@ -23,4 +26,12 @@ function projMatrix = estimateProjectionMatrix(xy, uv)
     [U,D,V] = svd(projMatrix);
     D(end,end) = 0;
     projMatrix = U*D*V';
+end
+
+function xy = normalise(xy,o)
+    m = mean(xy,2);
+    d = mean(sqrt(sum((xy - repmat(m,1,size(xy,2)) ).^2, 1)));
+    sq2d = sqrt(2)/d;
+    T = [sq2d 0 -m(1)*sq2d; 0 sq2d -m(2)*sq2d; 0 0 1];
+    xy = T*[xy;o];
 end
