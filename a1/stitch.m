@@ -1,13 +1,14 @@
 function [pc_out,ttoc] = stitch(type,nth,mx,method,param,thresh,MAXITER)
     
-    source = get(0);
+    X = [22:1:mx 0:1:19];
+    source = get(X(1));
     pc_tot = cell(1,length(nth:nth:mx));
     %pc_tot = [];
     p = 1;
     ttoc = 0;
     switch type
         case 'iter'
-            for i=nth:nth:mx
+            for i=X(nth:nth:end)
                 target = get(i);
                 tic;
                 %s_datasample = datasample(source, size(target,2));
@@ -22,7 +23,7 @@ function [pc_out,ttoc] = stitch(type,nth,mx,method,param,thresh,MAXITER)
                 p = 1 + p;
             end
         otherwise
-            for i=nth:nth:mx
+            for i=X(nth:nth:end)
                 target = get(i);
                 tic;
                 [R,t] = ICP(source,target,method,param,thresh,MAXITER);
