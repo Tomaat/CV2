@@ -10,5 +10,5 @@ function plotepilines(p,f1,f2,T)
     
     subplot(1,2,2)
     imshow(f2);
-    line(points([2 4],:),points([1 3],:));
+    line(points([1 3],:),points([2 4],:));
 end
