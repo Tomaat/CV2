@@ -13,14 +13,13 @@ function [T, bestIN] = RANSAC(Data,eps,k)
     for i=1:k % loop iteratins
         
         perm = randperm(x); %
-        IN = Data(:,perm(1:4)); % get a random permutatio of 4 points
+        IN = Data(:,perm(1:2)); % get a random permutatio of 4 points
         other = Data(:,perm(5:end));
-        M = createProjectionMatrix(IN(1:2,:)',IN(3:4,:)');
+        M = estimateProjectionMatrix(IN(1:2,:)',IN(3:4,:)',1);
         a = M*[other(1:2,:);ones(1,x-4)];
         a = a ./ repmat(a(3,:),3,1);
         
         dis = sqrt(sum( (a(1:2,:)-other(3:4,:)).^2 ));
-        
         
         truePos = other(:,dis < eps); % threshhold
         
@@ -28,5 +27,5 @@ function [T, bestIN] = RANSAC(Data,eps,k)
             bestIN = truePos;
         end
     end %end for loop iteration
-    T = estimateProjectionMatrix(bestIN(1:2,:)',bestIN(3:4,:)');
+    T = estimateProjectionMatrix(bestIN(1:2,:)',bestIN(3:4,:)',1);
 end % end function

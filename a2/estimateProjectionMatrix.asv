@@ -6,21 +6,24 @@
 
 % calculate a transformation matrix from the given from and to points
 % so uv=projMatrix*xy
-function projMatrix = estimateProjectionMatrix(xy, uv)
+function projMatrix = estimateProjectionMatrix(xy, uv, type)
+    if nargin < 3
+        type = false(1,1);
+    end
     % set the points
     x = xy (:, 1);
     y = xy (:, 2);
     u = uv (:, 1);
     v = uv (:, 2);
     o = ones ( size (x));
-    % make the matrix and calculate xAu = 0
+    z = zeros ( size (x));
+    % make the matrix and calculate Am = 0
+    %Aoddrows = [x, y, o , z, z, z, -u.*x, -u.*y, -u];
+    %Aevenrows = [z, z, z, x, y, o, -v.*x, -v.*y, -v];
+    %A = [ Aoddrows ; Aevenrows ];
     A = [x.*u x.*v x y.*u y.*v y u v o];
-    
     [~, ~, V] = svd(A);
     m = V(:, end );
     % reshape m into the 3x3 projection matrix M
     projMatrix = reshape (m, 3, 3)';
-    [U,D,V] = svd(projMatrix);
-    D(end,end) = 0;
-    projMatrix = U*D*V';
 end
