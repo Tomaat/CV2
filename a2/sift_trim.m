@@ -19,7 +19,7 @@ function [img,f,d] = sift_trim(img,thres)
         c = round(f(1:2,i));
         elim(i) = any(all(xy == repmat(c,1,size(xy,2))));
     end
-    plot(elim)
+    %plot(elim)
     f(:,elim) = [];
     d(:,elim) = [];
 end

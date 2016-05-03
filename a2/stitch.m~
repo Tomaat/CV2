@@ -6,7 +6,7 @@ s(1).d = d1;
 prev_idx = 1:size(f1,2);
 pv_mat = ones(size(prev_idx));
 
-for i=2:5
+for i=2:3
     i1 = s(i-1).i;
     f1 = s(i-1).f;
     d1 = s(i-1).d;
@@ -20,9 +20,9 @@ for i=2:5
     xy2 = f2(1:2,matches(2,:));
     
     [T,in,idx] = RANSAC([xy1;xy2],4,20);
-
+    idx
     %figure,
-    %plotlines(i1,xy1,i2,xy2,in);
+    plotlines(i1,xy1,i2,xy2,in);
     
     %[y,x] = meshgrid(170:170:400,170:170:400); p = [x(:) y(:)]';
     %figure,
@@ -38,7 +38,7 @@ for i=2:5
     
     
     if i == 2
-        p1 = f1(1:2,:);
+        
     else
         p1 = s(i-1).in(2:3,:);
     end
@@ -51,8 +51,8 @@ for i=2:5
         if any(match)
             % set true
             tmp =find(match);
-            pv_mat(i,prev_idx(tmp(1))) = 1;
-            new_prev_idx(k) = tmp(1);
+            pv_mat(i,prev_idx(tmp)) = 1;
+            new_prev_idx(k) = tmp;
         else
             % add column
             pv_mat(i,end+1) = 1;
