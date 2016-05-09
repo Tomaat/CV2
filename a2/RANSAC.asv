@@ -7,10 +7,11 @@
 % This function uses the RANSAC algorithm on the given Data
 % with given error, iterations k and part of the first step p
 % it returns the median m value and the inliers IN
-function [T, bestIN, out] = RANSAC(Data,eps,k)
+function [T, bestIN, out] = RANSAC(Data,eps,k,pv_mat)
     [~,x] = size(Data);
     bestIN = [];
     out = [];
+    %pv_mat_tmp = pv_mat;
     for i=1:k % loop iteratins
         
         perm = randperm(x); %
@@ -33,8 +34,9 @@ function [T, bestIN, out] = RANSAC(Data,eps,k)
         if size(truePos,2) > size(bestIN,2)
             bestIN = truePos;
             out = other(:,dis >= eps);
-            %temp = perm(9:end);
-            %out = temp(dis<eps);
+            temp = perm(9:end);
+            idx = temp(dis<eps);
+            
         end
     end %end for loop iteration
     T = estimateProjectionMatrix(bestIN(1:2,:),bestIN(3:4,:));
