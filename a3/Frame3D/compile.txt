@@ -1,0 +1,1 @@
+g++ -std=c++11 main.h main.cpp Frame3D.cpp Frame3D.h FileUtils.cpp FileUtils.h -I/usr/include/eigen3 -lboost_filesystem -lboost_system `pkg-config --libs opencv` -o my_exec
