@@ -13,7 +13,7 @@
 #include <boost/filesystem/operations.hpp>
 #include <sys/stat.h>
 
-#include "FileUtils.h"
+#include "../include/FileUtils.h"
 
 using namespace std;
 using namespace cv;
