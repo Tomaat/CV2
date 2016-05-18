@@ -29,7 +29,7 @@ int main()
     /**
      *  Load the images in the directory
      */
-    vector<Frame3D> frames = Frame3D::loadFrames("../../3dframes"); 
+    vector<Frame3D> frames = Frame3D::loadFrames("3dframes"); 
 
     /**
      *  Merge the point clouds

@@ -38,7 +38,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr mergeFrames(const std::vector<Frame3D> &fram
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth);
 pcl::PointCloud<pcl::PointNormal>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
-// pcl::PointCloud<pcl::PointXYZ>::Ptr transformPointCloud(pcl::PointCloud);
+pcl::PointCloud<pcl::PointNormal>::Ptr transformPointCloud(pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud, Eigen::Matrix4f camera_pose);
 // pcl::PointCloud<pcl::PointXYZ>::Ptr concatPointClouds(pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr);
 
 

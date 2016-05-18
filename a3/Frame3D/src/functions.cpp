@@ -126,6 +126,19 @@ pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::computeNormals(pcl::PointClo
 }
 
 /**
+ *  TransformPointCloud function
+ *
+ *  This function takes a point cloud and transforms it according to the camera pose
+ * @param  normal_cloud [description]
+ * @param  camera_post  [description]
+ * @return              [description]
+ */
+pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::transformPointCloud(pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud, Eigen::Matrix4f camera_pose)
+{
+
+}
+
+/**
  *  texture function
  *
  *  This function colors the 3D model returned by the mergePointClouds function
