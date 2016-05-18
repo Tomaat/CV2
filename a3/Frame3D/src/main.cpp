@@ -30,13 +30,12 @@ int main()
     /**
      *  Load the images in the directory
      */
-    vector<Frame3D> = Frame3D::loadFrames("../3dframes"); 
-
-
-    // Frame3D loader("../3dframes/");
+    vector<Frame3D> frames = Frame3D::loadFrames("../../3dframes"); 
 
 
 
 
-    Functions3D::texture(1, 2);
+    // Functions3D::texture(1, 2);
+    // 
+    cout << Functions3D::mergePointClouds(frames) << std::endl;
 }

@@ -15,8 +15,13 @@ find_package( OpenCV REQUIRED )
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
+find_package(PCL 1.5.2 REQUIRED COMPONENTS common io visualization)
+include_directories(${PCL_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS})
+add_definitions(${PCL_DEFINITIONS})
+
 file(GLOB SOURCES "src/*.cpp")
 
 add_executable(frame3d ${SOURCES})
 
-target_link_libraries(frame3d ${Boost_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(frame3d ${Boost_LIBRARIES} ${OpenCV_LIBS} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES})
