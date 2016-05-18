@@ -36,11 +36,9 @@ namespace Functions3D {
  */
 pcl::PointCloud<pcl::PointXYZ>::Ptr mergeFrames(const std::vector<Frame3D> &frames);
 
-
-
 pcl::PointCloud<pcl::PointXYZ>::Ptr depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth);
-pcl::PointCloud<pcl::PointXYZ>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
-// pcl::PointCloud<pcl::PointXYZ>::Ptr transformPointCloud();
+pcl::PointCloud<pcl::PointNormal>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
+// pcl::PointCloud<pcl::PointXYZ>::Ptr transformPointCloud(pcl::PointCloud);
 // pcl::PointCloud<pcl::PointXYZ>::Ptr concatPointClouds(pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr);
 
 

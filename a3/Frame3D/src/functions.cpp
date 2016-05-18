@@ -47,7 +47,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::mergeFrames(const std::vector<F
 
 
 
-
         cloud = pcloud;
         break;
     }
@@ -113,7 +112,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat
  *  @param  cloud
  *  @return cloud with normals
  */
-pcl::PointCloud<pcl::PointNormal>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
 {
     pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals (new pcl::PointCloud<pcl::PointNormal>); // Output datasets
     pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::PointNormal> normal_estimator;
