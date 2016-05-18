@@ -20,19 +20,19 @@
  *  @param std::vector<Frame3D> frames
  *  @return point cloud
  */
-pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::mergeFrames(const std::vector<Frame3D> &frames)
+pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::mergeFrames(const std::vector<Frame3D> &frames)
 {
     /**
      *  Initialize a new point cloud
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointNormal>::Ptr total_cloud(new pcl::PointCloud<pcl::PointNormal>);
 
     /**
      *  Loop over all frames in the vector
      */
     for (size_t i = 0; i < frames.size(); i++) 
     {
-        if (i < 3) continue;
+        std::cout << "Processing frame " << i << std::endl;
     
         // Save reference instead of copy
         const Frame3D &current_frame = frames[i];
@@ -40,22 +40,29 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::mergeFrames(const std::vector<F
         // get data from the frame
         cv::Mat depth = current_frame.depth_image_;
         double focal = current_frame.focal_length_;
+        const Eigen::Matrix4f camera_pose = current_frame.getEigenTransform();
 
-        auto pcloud = depthToPointCloud(depth, focal, 1);
-        auto normal_cloud = computeNormals(pcloud);
+        pcl::PointCloud<pcl::PointXYZ>::Ptr pcloud = depthToPointCloud(depth, focal, 1);
+        pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud = computeNormals(pcloud);
+        pcl::PointCloud<pcl::PointNormal>::Ptr transformed_normal_cloud = transformPointCloud(normal_cloud, camera_pose);
 
-
-
-
-        cloud = pcloud;
-        break;
+        *total_cloud += *transformed_normal_cloud;
     }
 
-    // pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
-    // viewer.showCloud(cloud);
-    // while (!viewer.wasStopped()) {}
+    /**
+     *  Convert to XYZ to show the cloud
+     */
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::copyPointCloud(*total_cloud, *cloud);
 
-    return cloud;
+    pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
+    viewer.showCloud(cloud);
+    while (!viewer.wasStopped()) {}
+
+    /**
+     *  Return the concatenated clouds
+     */
+    return total_cloud;
 }
 /**
  *  depthToPointCloud function
@@ -79,6 +86,8 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat
     const int half_x = depth_image.cols / 2;
     const int half_y = depth_image.rows / 2;
 
+    cloud->points.reserve(depth_image.rows * depth_image.cols);
+
     /**
      *  Iterate over the depth image and add points to the point cloud
      */
@@ -91,6 +100,12 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat
             {
                 pcl::PointXYZ point((x - half_x) * value * inv_focal_length, (y - half_y) * value * inv_focal_length, value);
                 cloud->push_back(point);
+            }
+            else
+            {
+                pcl::PointXYZ point(x, y, NAN);
+                cloud->push_back(point);
+
             }
         }
     }
@@ -129,13 +144,19 @@ pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::computeNormals(pcl::PointClo
  *  TransformPointCloud function
  *
  *  This function takes a point cloud and transforms it according to the camera pose
- * @param  normal_cloud [description]
- * @param  camera_post  [description]
- * @return              [description]
+ *  @param  normal_cloud the cloud with normals
+ *  @param  camera_pose  the camera pose
+ *  @return              the cloud transformed
  */
 pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::transformPointCloud(pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud, Eigen::Matrix4f camera_pose)
 {
-
+    /**
+     *  Initialize a new point cloud to save the data
+     */
+    // Eigen::Matrix4f inv = camera_pose.transpose();
+    pcl::PointCloud<pcl::PointNormal>::Ptr new_cloud(new pcl::PointCloud<pcl::PointNormal>);
+    pcl::transformPointCloudWithNormals(*normal_cloud, *new_cloud, camera_pose);
+    return new_cloud;
 }
 
 /**

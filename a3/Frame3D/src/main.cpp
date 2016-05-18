@@ -24,8 +24,6 @@ using namespace std;
  */
 int main() 
 {
-    cout << "Dit is een test" << endl;
-
     /**
      *  Load the images in the directory
      */

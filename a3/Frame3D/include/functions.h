@@ -21,6 +21,7 @@
 #include <pcl/point_types.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/features/integral_image_normal.h>
+#include <pcl/common/transforms.h>
 
 /**
  *  Set up namespace
@@ -34,12 +35,11 @@ namespace Functions3D {
  *  @param std::vector<Frame3D> frames
  *  @return pcl::PointCloud<pcl::PointXYZ>::Ptr
  */
-pcl::PointCloud<pcl::PointXYZ>::Ptr mergeFrames(const std::vector<Frame3D> &frames);
+pcl::PointCloud<pcl::PointNormal>::Ptr mergeFrames(const std::vector<Frame3D> &frames);
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth);
 pcl::PointCloud<pcl::PointNormal>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 pcl::PointCloud<pcl::PointNormal>::Ptr transformPointCloud(pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud, Eigen::Matrix4f camera_pose);
-// pcl::PointCloud<pcl::PointXYZ>::Ptr concatPointClouds(pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr);
 
 
 /**
