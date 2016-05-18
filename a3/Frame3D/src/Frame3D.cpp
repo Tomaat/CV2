@@ -15,8 +15,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgcodecs/imgcodecs_c.h>
 
-#include "Frame3D.h"
-#include "FileUtils.h"
+#include "../include/Frame3D.h"
+#include "../include/FileUtils.h"
 
 #if USE_EIGEN
 #include <Eigen/Core>
