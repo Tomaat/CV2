@@ -20,38 +20,67 @@
  *  @param std::vector<Frame3D> frames
  *  @return point cloud
  */
-int Functions3D::mergePointClouds(std::vector<Frame3D> frames)
+pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::mergeFrames(const std::vector<Frame3D> &frames)
 {
+    /**
+     *  Initialize a new point cloud
+     */
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+
     /**
      *  Loop over all frames in the vector
      */
-    for (size_t i = 0; i < frames.size(); i++ ) {
         // Save reference instead of copy
         const Frame3D &current_frame = frames[i];
+
+        // get data from the frame
+        cv::Mat depth = current_frame.depth_image_;
+        double focal = current_frame.focal_length_;
+
+        cloud = depthToPointCloud(depth, focal, 1);
+
+        break;
     }
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-    // //Fillintheclouddata
-    cloud->width=50;
-    cloud->height=1;
-    cloud->is_dense=false;
-    cloud->points.resize(cloud->width*cloud->height);
-    for(size_t i=0; i < cloud->points.size(); ++i)
-    {
-        cloud->points[i].x=1024*rand()/(50+1.0f);
-        cloud->points[i].y=1024*rand()/(50+1.0f);
-        cloud->points[i].z=1024*rand()/(50+1.0f);
-    }
-    // pcl::io::savePCDFileASCII("testpcd.pcd", cloud);
-
-    // pcl::PointCloud<pcl::PointXYZRGB> cloud;
-   //... populate cloud
-    ::pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
+    pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
     viewer.showCloud(cloud);
     while (!viewer.wasStopped()) {}
 
+    return cloud;
+}
 
-    return 1;
+pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth)
+{
+    /**
+     *  Initialize a new point cloud to save the data
+     */
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+
+
+    const float inv_focal_length = 1.0 / focal_length;
+    const int half_x = depth_image.cols / 2;
+    const int half_y = depth_image.rows / 2;
+
+    /**
+     *  Iterate over the depth image and add points to the point cloud
+     */
+    for(int y = 0; y < depth_image.rows; y++)
+    {
+        for (int x = 0; x < depth_image.cols; x++)
+        {
+            float value = depth_image.at<ushort>(cv::Point(x, y)) * 0.001;
+            if (value > 0 && value < max_depth)
+            {
+                pcl::PointXYZ point((x - half_x) * value * inv_focal_length, (y - half_y) * value * inv_focal_length, value);
+                cloud->push_back(point);
+            }
+        }
+    }
+
+    cloud->width = depth_image.cols;
+    cloud->height = depth_image.rows;
+
+    return cloud;
 }
 
 /**

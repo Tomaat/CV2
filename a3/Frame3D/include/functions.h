@@ -20,7 +20,7 @@
 #include "Frame3D.h"
 #include <pcl/point_types.h>
 #include <pcl/visualization/cloud_viewer.h>
- 
+
 /**
  *  Set up namespace
  */
@@ -31,9 +31,17 @@ namespace Functions3D {
  *
  *  This function merges multiple point clouds to one point cloud
  *  @param std::vector<Frame3D> frames
- *  @return point cloud
+ *  @return pcl::PointCloud<pcl::PointXYZ>::Ptr
  */
-int mergePointClouds(std::vector<Frame3D> frames);
+pcl::PointCloud<pcl::PointXYZ>::Ptr mergeFrames(const std::vector<Frame3D> &frames);
+
+
+
+pcl::PointCloud<pcl::PointXYZ>::Ptr depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth);
+// pcl::PointCloud<pcl::PointXYZ>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr);
+// pcl::PointCloud<pcl::PointXYZ>::Ptr transformPointCloud();
+// pcl::PointCloud<pcl::PointXYZ>::Ptr concatPointClouds(pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr);
+
 
 /**
  *  texture function

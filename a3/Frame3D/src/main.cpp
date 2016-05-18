@@ -13,7 +13,7 @@
 #include "../include/main.h"
 
 /**
- *  Use the STD namespace
+ *  Use the std namespace
  */
 using namespace std;
 
@@ -21,7 +21,6 @@ using namespace std;
  *  The main function
  *
  *  From this function, the other functions are called
- *  @return [description]
  */
 int main() 
 {
@@ -32,10 +31,10 @@ int main()
      */
     vector<Frame3D> frames = Frame3D::loadFrames("../../3dframes"); 
 
+    /**
+     *  Merge the point clouds
+     */
+    auto merged = Functions3D::mergeFrames(frames);
 
-
-
-    // Functions3D::texture(1, 2);
-    // 
-    cout << Functions3D::mergePointClouds(frames) << std::endl;
+    return 0;
 }
