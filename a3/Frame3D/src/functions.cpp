@@ -4,7 +4,7 @@
  *  Implementation for the main assignment
  *
  *  @author David van Erkelens (10264019) <david.vanerkelens@student.uva.nl>
- *  @author Ysbrand Galama () <ysbrand.galama@student.uva.nl>
+ *  @author Ysbrand Galama (10262067) <ysbrand.galama@student.uva.nl>
  */
 
 /**
@@ -30,6 +30,10 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::mergeFrames(const std::vector<F
     /**
      *  Loop over all frames in the vector
      */
+    for (size_t i = 0; i < frames.size(); i++) 
+    {
+        if (i < 3) continue;
+    
         // Save reference instead of copy
         const Frame3D &current_frame = frames[i];
 
@@ -37,19 +41,34 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::mergeFrames(const std::vector<F
         cv::Mat depth = current_frame.depth_image_;
         double focal = current_frame.focal_length_;
 
-        cloud = depthToPointCloud(depth, focal, 1);
+        auto pcloud = depthToPointCloud(depth, focal, 1);
+        auto normal_cloud = computeNormals(pcloud);
 
+
+
+
+
+        cloud = pcloud;
         break;
     }
 
-    pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
-    viewer.showCloud(cloud);
-    while (!viewer.wasStopped()) {}
+    // pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
+    // viewer.showCloud(cloud);
+    // while (!viewer.wasStopped()) {}
 
     return cloud;
 }
-
-pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth)
+/**
+ *  depthToPointCloud function
+ *
+ *  Takes a depth image, a focal length and a maximum depth and generates a point cloud with this data.
+ *  
+ *  @param  depth_image  the depth image
+ *  @param  focal_length the focal depth
+ *  @param  max_depth    the maximum depth (default is 1.0)
+ *  @return              the point cloud
+ */
+pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth = 1.0)
 {
     /**
      *  Initialize a new point cloud to save the data
@@ -81,6 +100,30 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat
     cloud->height = depth_image.rows;
 
     return cloud;
+}
+
+/**
+ *  computeNormals function
+ *
+ *  Computes the normals for a given point cloud. Taken from the example from blackboard and
+ *  edited to fit in our program
+ *
+ *  @see http://blackboard.uva.nl/ -> 20152016 CV2 
+ *  
+ *  @param  cloud
+ *  @return cloud with normals
+ */
+pcl::PointCloud<pcl::PointNormal>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud)
+{
+    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals (new pcl::PointCloud<pcl::PointNormal>); // Output datasets
+    pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::PointNormal> normal_estimator;
+    normal_estimator.setNormalEstimationMethod(normal_estimator.AVERAGE_3D_GRADIENT);
+    normal_estimator.setMaxDepthChangeFactor(0.02f);
+    normal_estimator.setNormalSmoothingSize(10.0f);
+    normal_estimator.setInputCloud(cloud);
+    normal_estimator.compute(*cloud_normals);
+    pcl::copyPointCloud(*cloud, *cloud_normals);
+    return cloud_normals;
 }
 
 /**

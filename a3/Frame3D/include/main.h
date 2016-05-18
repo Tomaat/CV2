@@ -4,7 +4,7 @@
  *  Header file for the main assignment
  *
  *  @author David van Erkelens (10264019) <david.vanerkelens@student.uva.nl>
- *  @author Ysbrand Galama () <ysbrand.galama@student.uva.nl>
+ *  @author Ysbrand Galama (10262067) <ysbrand.galama@student.uva.nl>
  */
 
 /**

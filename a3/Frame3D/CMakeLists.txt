@@ -24,4 +24,4 @@ file(GLOB SOURCES "src/*.cpp")
 
 add_executable(frame3d ${SOURCES})
 
-target_link_libraries(frame3d ${Boost_LIBRARIES} ${OpenCV_LIBS} ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES})
+target_link_libraries(frame3d ${Boost_LIBRARIES} ${OpenCV_LIBS} ${PCL_LIBRARIES})

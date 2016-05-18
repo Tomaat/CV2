@@ -4,7 +4,7 @@
  *  Header file for the main assignment
  *
  *  @author David van Erkelens (10264019) <david.vanerkelens@student.uva.nl>
- *  @author Ysbrand Galama () <ysbrand.galama@student.uva.nl>
+ *  @author Ysbrand Galama (10262067) <ysbrand.galama@student.uva.nl>
  */
 
 /**
@@ -20,6 +20,7 @@
 #include "Frame3D.h"
 #include <pcl/point_types.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <pcl/features/integral_image_normal.h>
 
 /**
  *  Set up namespace
@@ -38,7 +39,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr mergeFrames(const std::vector<Frame3D> &fram
 
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth);
-// pcl::PointCloud<pcl::PointXYZ>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr);
+pcl::PointCloud<pcl::PointXYZ>::Ptr computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud);
 // pcl::PointCloud<pcl::PointXYZ>::Ptr transformPointCloud();
 // pcl::PointCloud<pcl::PointXYZ>::Ptr concatPointClouds(pcl::PointCloud<pcl::PointXYZ>::Ptr, pcl::PointCloud<pcl::PointXYZ>::Ptr);
 
