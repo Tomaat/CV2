@@ -60,12 +60,12 @@ pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::mergeFrames(const std::vecto
     /**
      *  Convert to XYZ to show the cloud
      */
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::copyPointCloud(*total_cloud, *cloud);
+    // pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+    // pcl::copyPointCloud(*total_cloud, *cloud);
 
-    pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
-    viewer.showCloud(cloud);
-    while (!viewer.wasStopped()) {}
+    // pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
+    // viewer.showCloud(cloud);
+    // while (!viewer.wasStopped()) {}
 
     /**
      *  Return the concatenated clouds
