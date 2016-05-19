@@ -18,10 +18,15 @@
 #include <iostream>
 #include "FileUtils.h"
 #include "Frame3D.h"
+
+/**
+ *  Point Cloud Library (PCL) dependencies
+ */
 #include <pcl/point_types.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/common/transforms.h>
+#include <pcl/io/pcd_io.h>
 
 /**
  *  Set up namespace

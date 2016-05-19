@@ -28,25 +28,33 @@ pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::mergeFrames(const std::vecto
     pcl::PointCloud<pcl::PointNormal>::Ptr total_cloud(new pcl::PointCloud<pcl::PointNormal>);
 
     /**
-     *  Loop over all frames in the vector
+     *  Check if the file exists, otherwise process all frames
      */
-    for (size_t i = 0; i < frames.size(); i++) 
+    if (pcl::io::loadPCDFile<pcl::PointNormal> ("../data/pointcloud.pcd", *total_cloud) == -1)
     {
-        std::cout << "Processing frame " << i << std::endl;
-    
-        // Save reference instead of copy
-        const Frame3D &current_frame = frames[i];
+        /**
+         *  Loop over all frames in the vector
+         */
+        for (size_t i = 0; i < frames.size(); i++) 
+        {
+            std::cout << "Processing frame " << i << std::endl;
+        
+            // Save reference instead of copy
+            const Frame3D &current_frame = frames[i];
 
-        // get data from the frame
-        cv::Mat depth = current_frame.depth_image_;
-        double focal = current_frame.focal_length_;
-        const Eigen::Matrix4f camera_pose = current_frame.getEigenTransform();
+            // get data from the frame
+            cv::Mat depth = current_frame.depth_image_;
+            double focal = current_frame.focal_length_;
+            const Eigen::Matrix4f camera_pose = current_frame.getEigenTransform();
 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr pcloud = depthToPointCloud(depth, focal, 1);
-        pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud = computeNormals(pcloud);
-        pcl::PointCloud<pcl::PointNormal>::Ptr transformed_normal_cloud = transformPointCloud(normal_cloud, camera_pose);
+            pcl::PointCloud<pcl::PointXYZ>::Ptr pcloud = depthToPointCloud(depth, focal, 1);
+            pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud = computeNormals(pcloud);
+            pcl::PointCloud<pcl::PointNormal>::Ptr transformed_normal_cloud = transformPointCloud(normal_cloud, camera_pose);
 
-        *total_cloud += *transformed_normal_cloud;
+            *total_cloud += *transformed_normal_cloud;
+        }
+
+        pcl::io::savePCDFileASCII("../data/pointcloud.pcd", *total_cloud);
     }
 
     /**
@@ -105,7 +113,6 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat
             {
                 pcl::PointXYZ point(x, y, NAN);
                 cloud->push_back(point);
-
             }
         }
     }
