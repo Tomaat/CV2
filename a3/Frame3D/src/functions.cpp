@@ -57,7 +57,8 @@ pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::mergeFrames(const std::vecto
             addPointCloud(total_cloud, transformed_normal_cloud);
         }
 
-       pcl::io::savePLYFile("../data/" + filename, *total_cloud);
+        // @todo the combination of this with the load function does not work yet
+        pcl::io::savePLYFile("../data/" + filename, *total_cloud);
     }
 
     /**
@@ -223,6 +224,10 @@ pcl::PolygonMesh Functions3D::createMesh(pcl::PointCloud<pcl::PointNormal>::Ptr 
     // Initialize objects
     pcl::Poisson<pcl::PointNormal> reconstructor;
     pcl::PolygonMesh triangles;
+
+    // set parameters
+    reconstructor.setDepth(12.0);
+    reconstructor.setSamplesPerNode(14.0);
 
     // Get result
     reconstructor.setInputCloud(cloud);
