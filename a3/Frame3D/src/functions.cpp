@@ -31,7 +31,7 @@ pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::mergeFrames(const std::vecto
     /**
      *  Check if the file exists, otherwise process all frames
      */
-    if (pcl::io::loadPLYFile<pcl::PointNormal> ("../data/" + filename, *total_cloud) == -1)
+    if (pcl::io::loadPLYFile<pcl::PointNormal>("../data/" + filename, *total_cloud) == -1)
     {
         /**
          *  Loop over all frames in the vector
@@ -87,7 +87,7 @@ pcl::PointCloud<pcl::PointNormal>::Ptr Functions3D::mergeFrames(const std::vecto
  *  @param  max_depth    the maximum depth (default is 1.0)
  *  @return              the point cloud
  */
-pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth = 1.0)
+pcl::PointCloud<pcl::PointXYZ>::Ptr Functions3D::depthToPointCloud(const cv::Mat &depth_image, double focal_length, double max_depth = 1.2)
 {
     /**
      *  Initialize a new point cloud to save the data
@@ -209,7 +209,7 @@ void Functions3D::addPointCloud(pcl::PointCloud<pcl::PointNormal>::Ptr cloud_bas
  *  @see http://pointclouds.org/documentation/tutorials/greedy_projection.php
  *
  *  @param  cloud       the cloud to generate a mesh from
- *  @param  type        the algorithm to run the generation for
+ *  @param  type        the algorithm to run the generation for (poisson, marching, greedy)
  *  @param  filename    the filename to save the mesh to
  *  @return             the mesh created
  */
@@ -219,22 +219,68 @@ pcl::PolygonMesh Functions3D::createMesh(pcl::PointCloud<pcl::PointNormal>::Ptr 
     pcl::search::KdTree<pcl::PointNormal>::Ptr tree (new pcl::search::KdTree<pcl::PointNormal>);
     tree->setInputCloud(cloud);
 
-    // @todo implement multiple reconstruction methods
-
-    // Initialize objects
-    pcl::Poisson<pcl::PointNormal> reconstructor;
+    // create the polygonmesh variable
     pcl::PolygonMesh triangles;
 
-    // set parameters
-    reconstructor.setDepth(12.0);
-    reconstructor.setSamplesPerNode(14.0);
+    // check for multiple reconstruction types
+    if (type == "poisson")
+    {
+        // Initialize reconstructor
+        pcl::Poisson<pcl::PointNormal> reconstructor;
+       
+        // set parameters
+        reconstructor.setDepth(12.0);
+        reconstructor.setSamplesPerNode(14.0);
 
-    // Get result
-    reconstructor.setInputCloud(cloud);
-    reconstructor.setSearchMethod(tree);
-    reconstructor.reconstruct(triangles);
+        // Get result
+        reconstructor.setInputCloud(cloud);
+        reconstructor.setSearchMethod(tree);
+        reconstructor.reconstruct(triangles);
+    }
+    else if (type == "marching")
+    {
+        // Initialize reconstructor
+        pcl::MarchingCubesHoppe<pcl::PointNormal> reconstructor;
 
-    // save the file 
+        // set parameters
+        // @todo optimize these parameters
+        reconstructor.setGridResolution(75, 75, 75);
+        // reconstructor.setIsoLevel(0.05);
+        // reconstructor.setPercentageExtendGrid(15.0);
+
+        // get result
+        reconstructor.setInputCloud(cloud);
+        reconstructor.setSearchMethod(tree);
+        reconstructor.reconstruct(triangles);
+    }
+    else if (type == "greedy")
+    {
+        // Initialize reconstructor
+        pcl::GreedyProjectionTriangulation<pcl::PointNormal> reconstructor;
+
+        // Set the maximum distance between connected points (maximum edge length)
+        reconstructor.setSearchRadius(0.25);
+
+        // Set typical values for the parameters
+        reconstructor.setMu(2.5);
+        reconstructor.setMaximumNearestNeighbors(5000);
+        reconstructor.setMaximumSurfaceAngle(M_PI/4); // 45 degrees
+        reconstructor.setMinimumAngle(M_PI/18); // 10 degrees
+        reconstructor.setMaximumAngle(2*M_PI/3); // 120 degrees
+        reconstructor.setNormalConsistency(false);
+
+        // Get result
+        reconstructor.setInputCloud(cloud);
+        reconstructor.setSearchMethod(tree);
+        reconstructor.reconstruct(triangles);
+    }
+    else
+    {
+        // type not known, throw error
+        throw std::runtime_error(std::string("Mesh reconstructor type '" + type + "' not known"));
+    }
+
+    // save the mesh to a file 
     pcl::io::saveVTKFile("../data/" + filename, triangles);
 
     // return the mesh

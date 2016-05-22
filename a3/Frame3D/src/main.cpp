@@ -37,7 +37,7 @@ int main()
     /**
      *  Try to create a mesh from the point cloud
      */
-    auto mesh = Functions3D::createMesh(merged, "notimplemented", "mesh2.vtk");
+    auto mesh = Functions3D::createMesh(merged, "greedy", "mesh3.vtk");
 
     return 0;
 }

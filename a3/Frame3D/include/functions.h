@@ -32,6 +32,7 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/surface/poisson.h>
 #include <pcl/surface/gp3.h>
+#include <pcl/surface/marching_cubes_hoppe.h>
 
 /**
  *  Set up namespace
