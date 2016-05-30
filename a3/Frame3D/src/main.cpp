@@ -4,7 +4,7 @@
  *  Implementation for the main assignment
  *
  *  @author David van Erkelens (10264019) <david.vanerkelens@student.uva.nl>
- *  @author Ysbrand Galama () <ysbrand.galama@student.uva.nl>
+ *  @author Ysbrand Galama (10262067) <ysbrand.galama@student.uva.nl>
  */
 
 /**
@@ -13,7 +13,7 @@
 #include "../include/main.h"
 
 /**
- *  Use the STD namespace
+ *  Use the std namespace
  */
 using namespace std;
 
@@ -21,22 +21,23 @@ using namespace std;
  *  The main function
  *
  *  From this function, the other functions are called
- *  @return [description]
  */
 int main() 
 {
-    cout << "Dit is een test" << endl;
-
     /**
      *  Load the images in the directory
      */
-    vector<Frame3D> = Frame3D::loadFrames("../3dframes"); 
+    vector<Frame3D> frames = Frame3D::loadFrames("3dframes"); 
 
+    /**
+     *  Merge the point clouds
+     */
+    auto merged = Functions3D::mergeFrames(frames, "pointcloud2.ply");
 
-    // Frame3D loader("../3dframes/");
+    /**
+     *  Try to create a mesh from the point cloud
+     */
+    auto mesh = Functions3D::createMesh(merged, "greedy", "mesh3.vtk");
 
-
-
-
-    Functions3D::texture(1, 2);
+    return 0;
 }

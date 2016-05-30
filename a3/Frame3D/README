@@ -1,0 +1,1 @@
+To run: go to a3/Frame3D/build directory, run cmake .., run make, run ./frame3d
