@@ -37,12 +37,12 @@ int main()
     /**
      *  Try to create a mesh from the point cloud
      */
-    auto mesh = Functions3D::createMesh(merged, "poisson", "mesh3.vtk");
+    auto mesh = Functions3D::createMesh(merged, "poisson", "poisson.vtk");
 
     /**
      *  Texture the mesh created
      */
-    Functions3D::texture(mesh, frames, "colormesh.vtk");
+    Functions3D::texture(mesh, frames, "colormesh2.vtk");
 
     return 0;
 }

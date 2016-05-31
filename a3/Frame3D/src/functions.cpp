@@ -298,80 +298,101 @@ pcl::PolygonMesh Functions3D::createMesh(pcl::PointCloud<pcl::PointNormal>::Ptr 
  */
 void Functions3D::texture(pcl::PolygonMesh mesh, std::vector<Frame3D> frames, std::string filename)
 {
-    // @todo implement this
-
     // load values from the mesh
     auto polygons = mesh.polygons;
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+    // create cloud to save the points in
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());;
 
+    // create clouds to add the rgb points to
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_rgb(new pcl::PointCloud<pcl::PointXYZRGB>());;
+
+    // copy mesh cloud to both placeholders
     pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
+    pcl::fromPCLPointCloud2(mesh.cloud, *cloud_rgb);
 
-    pcl::TextureMapping<pcl::PointXYZ> texture_mapping;
+    // create texture mapping variable
+    auto texture_mapping = new pcl::TextureMapping<pcl::PointXYZ>();
+
+    // save uv coordinates
     Eigen::Vector2f uv_coordinates;
 
     /**
      *  Loop over all frames in the vector
      */
-    for (size_t i = 0; i < frames.size(); i++) 
+    for (int i = frames.size()-1; i>=0; i--)
     {
         // Save reference instead of copy
         const Frame3D &current_frame = frames[i];
 
         // get data from the frame
-        cv::Mat depth = current_frame.depth_image_;
-        double focal = current_frame.focal_length_;
+        auto depth = current_frame.depth_image_;
+        auto focal = current_frame.focal_length_;
         auto depth_map_size = depth.size();
         auto rgb_image = current_frame.rgb_image_;
 
+        // save and resize rgb image
         cv::Mat rgb_img;
         cv::resize(rgb_image, rgb_img, depth_map_size);
 
-        Eigen::Matrix4f camera_pose = current_frame.getEigenTransform();
+        // inverse the camera pose
+        auto camera_pose = current_frame.getEigenTransform();
         camera_pose(3,3) = 1;
         auto inv_camera = camera_pose.inverse().eval();
 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr trans_cloud(new pcl::PointCloud<pcl::PointXYZ>());
-        pcl::transformPointCloud(*cloud, *trans_cloud, inv_camera);
-
-        pcl::TextureMapping<pcl::PointXYZ>::Octree::Ptr octree(new pcl::TextureMapping<pcl::PointXYZ>::Octree(0.01));
-        octree->setInputCloud(trans_cloud->makeShared());
-        octree->addPointsFromInputCloud();
-
+        // create texture mapping camera
         pcl::texture_mapping::Camera camera;
         camera.focal_length = focal;
         camera.height = rgb_img.size().height;
         camera.width = rgb_img.size().width;
 
-        for (size_t j = 0; j < polygons.size(); j++)
-        {
-            const pcl::Vertices &polygon = polygons[j];
+        // reverse the point cloud transformation
+        pcl::PointCloud<pcl::PointXYZ>::Ptr trans_cloud(new pcl::PointCloud<pcl::PointXYZ>());
+        pcl::transformPointCloud(*cloud, *trans_cloud, inv_camera);
 
+        // create octree for texture mapping
+        pcl::TextureMapping<pcl::PointXYZ>::Octree::Ptr octree(new pcl::TextureMapping<pcl::PointXYZ>::Octree(0.01));
+        octree->setInputCloud(trans_cloud->makeShared());
+        octree->addPointsFromInputCloud();
+
+        /**
+         *  Loop over all polygons
+         */
+        for (pcl::Vertices polygon : polygons) 
+        {
+            /**
+             *  Loop over all vertices in the polygon
+             */
             for (uint32_t vertex : polygon.vertices)
             {
+                // check if the point is occluded
                 auto vertex_point = trans_cloud->points.at(vertex);
-
-                if (!texture_mapping.isPointOccluded(vertex_point, octree)) 
+                if (!texture_mapping->isPointOccluded(vertex_point, octree)) 
                 {
-                    if (texture_mapping.getPointUVCoordinates(vertex_point, camera, uv_coordinates)) 
+                    // if it is not, get the uv coordinates
+                    if (texture_mapping->getPointUVCoordinates(vertex_point, camera, uv_coordinates)) 
                     {
-
+                        // get the coordinates
                         int x = round(uv_coordinates.x() * camera.width);
                         int y = round(camera.height - uv_coordinates.y() * camera.height);
                         float z = depth.at<ushort>(y, x) * 0.001;
 
+                        // if they have the correct depth, save them
                         if (z < 1.2) 
                         {
-                            auto pixel = rgb_image.at<cv::Vec3b>(cv::Point(x, y));
-                            mesh.cloud.points.at(vertex).b = pixel[0];
-                            mesh.cloud.points.at(vertex).g = pixel[1];
-                            mesh.cloud.points.at(vertex).r = pixel[2];
+                            auto pixel = rgb_img.at<cv::Vec3b>(cv::Point(x, y));
+                            cloud_rgb->points.at(vertex).b = pixel[0];
+                            cloud_rgb->points.at(vertex).g = pixel[1];
+                            cloud_rgb->points.at(vertex).r = pixel[2];
                         }
                     }
                 }
             }
         }
     }
+
+    // set the rgb cloud as point cloud for the mesh
+    pcl::toPCLPointCloud2(*cloud_rgb, mesh.cloud);
 
     // save the mesh to a file 
     pcl::io::saveVTKFile("../data/" + filename, mesh);

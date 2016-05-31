@@ -23,6 +23,7 @@
  *  Point Cloud Library (PCL) dependencies
  */
 #include <pcl/point_types.h>
+#include <pcl/conversions.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
@@ -33,7 +34,10 @@
 #include <pcl/surface/poisson.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
-#include <pcl/surface/texture_mapping.h>
+
+// Something is fucked up... Include the implementation instead of the header,
+// otherwise the isPointOccluded function is not available...
+#include <pcl/surface/impl/texture_mapping.hpp>
 
 /**
  *  OpenCV dependencies
