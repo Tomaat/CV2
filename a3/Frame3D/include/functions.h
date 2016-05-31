@@ -33,6 +33,12 @@
 #include <pcl/surface/poisson.h>
 #include <pcl/surface/gp3.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
+#include <pcl/surface/texture_mapping.h>
+
+/**
+ *  OpenCV dependencies
+ */
+#include "opencv2/opencv.hpp"
 
 /**
  *  Set up namespace
@@ -114,7 +120,7 @@ pcl::PolygonMesh createMesh(pcl::PointCloud<pcl::PointNormal>::Ptr cloud, std::s
  *  @param point cloud mesh
  *  @param std::vector<Frame3D> frames
  */
-void texture(int mesh, std::vector<Frame3D> frames);
+void texture(pcl::PolygonMesh mesh, std::vector<Frame3D> frames, std::string filename);
 
 /**
  *  End of namespace
